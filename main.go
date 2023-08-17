@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/eugenshima/FakePriceProvider/internal/config"
 	"github.com/eugenshima/FakePriceProvider/internal/repository"
@@ -19,7 +18,7 @@ func NewRedis(env string) (*redis.Client, error) {
 		return nil, fmt.Errorf("error parsing redis: %v", err)
 	}
 
-	logrus.Println("Connected to redis!")
+	fmt.Println("Connected to redis!")
 	rdb := redis.NewClient(opt)
 	return rdb, nil
 }
@@ -27,7 +26,7 @@ func NewRedis(env string) (*redis.Client, error) {
 func main() {
 	cfg, err := config.NewConfig()
 	if err != nil {
-		fmt.Printf("Error extracting env variables: %v", err)
+		logrus.Errorf("Error extracting env variables: %v", err)
 		return
 	}
 	client, err := NewRedis(cfg.RedisConnectionString) //TODO: create redis stream
@@ -36,10 +35,7 @@ func main() {
 	}
 	rps := repository.NewPriceRepository(client)
 	ps := service.NewPriceService(rps)
-	for {
-		ps.GeneratePrice()
-		fmt.Println("price generated, waiting...")
-		time.Sleep(3 * time.Second)
-	}
+
+	ps.GeneratePrice([]string{"2", "5", "10", "20", "60", "100", "120", "150", "200", "1000"})
 
 }
