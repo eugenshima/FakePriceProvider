@@ -10,12 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Сonstants for generating random values
-const (
-	MAX = 1
-	MIN = 0
-)
-
 // PriceService represents a PriceProvider
 type PriceService struct {
 	rps PriceRepository
@@ -49,12 +43,13 @@ func (priceService *PriceService) GeneratePrice(constPrices []model.Share) {
 
 // DecimalCalculations returns new price decimal
 func DecimalCalculations(price string, delta float64) (decimal.Decimal, error) {
+	deltaPrice := decimal.NewFromFloatWithExponent(delta, -2)
 	decPrice, err := decimal.NewFromString(price)
 	if err != nil {
 		return decimal.Zero, fmt.Errorf("NewFromString: %v", err)
 	}
-	deltaPrice := decimal.NewFromFloat(delta)
-	if rand.Intn(2) == 1 && decPrice.GreaterThan(deltaPrice) {
+
+	if rand.Intn(2) == 1 || deltaPrice.GreaterThanOrEqual(decPrice) {
 		decPrice = decPrice.Add(deltaPrice)
 	} else {
 		decPrice = decPrice.Sub(deltaPrice)
