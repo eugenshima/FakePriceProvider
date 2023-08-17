@@ -1,15 +1,18 @@
+// Package config consist of our environment variables
 package config
 
 import (
 	"github.com/caarlos0/env/v9"
 )
 
-type config struct {
+// Config struct contains our configuration variables
+type Config struct {
 	RedisConnectionString string `env:"REDIS_CONNECTION_STRING"`
 }
 
-func NewConfig() (*config, error) {
-	cfg := &config{}
+// NewConfig creates a new Config
+func NewConfig() (*Config, error) {
+	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, err
 	}
