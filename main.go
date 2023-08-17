@@ -40,15 +40,15 @@ func main() {
 	ps := service.NewPriceService(rps)
 	start := []model.Share{
 		{
-			SharePrice: "2",
+			SharePrice: "30",
 			ShareName:  "Apple",
 		},
 		{
-			SharePrice: "5",
+			SharePrice: "50",
 			ShareName:  "Tesla",
 		},
 		{
-			SharePrice: "7",
+			SharePrice: "70",
 			ShareName:  "Amazon",
 		},
 		{
@@ -60,7 +60,7 @@ func main() {
 			ShareName:  "AMD",
 		},
 		{
-			SharePrice: "60",
+			SharePrice: "1337",
 			ShareName:  "Netflix",
 		},
 		{
@@ -68,11 +68,11 @@ func main() {
 			ShareName:  "GameStop",
 		},
 		{
-			SharePrice: "150",
+			SharePrice: "229",
 			ShareName:  "Spotify",
 		},
 		{
-			SharePrice: "200",
+			SharePrice: "1400",
 			ShareName:  "Microsoft",
 		},
 		{
