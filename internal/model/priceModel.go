@@ -1,8 +1,8 @@
+// Package model of our entity
 package model
 
-import "github.com/shopspring/decimal"
-
+// Share struct represents a model for shares
 type Share struct {
-	SharePrice decimal.Decimal `json:"price"`
-	ShareName  string          `json:"share_name"`
+	SharePrice string `json:"price"`
+	ShareName  string `json:"share_name"`
 }

@@ -1,46 +1,53 @@
+// Package service provides a set of functions, which include business-logic in it
 package service
 
 import (
 	"fmt"
 	"math/rand"
 
+	"github.com/eugenshima/FakePriceProvider/internal/model"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 )
 
+// Сonstants for generating random values
 const (
 	MAX = 1
 	MIN = 0
 )
 
+// PriceService represents a PriceProvider
 type PriceService struct {
 	rps PriceRepository
 }
 
+// NewPriceService creates a new PriceService
 func NewPriceService(rps PriceRepository) *PriceService {
 	return &PriceService{rps: rps}
 }
 
+// PriceRepository interface represents a repository methods
 type PriceRepository interface {
-	PriceStreaming(price []string)
+	PriceStreaming(price []model.Share)
 }
 
-func (priceService *PriceService) GeneratePrice(constPrices []string) {
+// GeneratePrice function is an infinite loop, which call PriceStreaming function
+func (priceService *PriceService) GeneratePrice(constPrices []model.Share) {
 	for {
 		share := constPrices
 		priceService.rps.PriceStreaming(share)
 		for i := 0; i < 10; i++ {
-			price, err := DecimalCalculations(share[i], GenerateRandomFloat())
+			price, err := DecimalCalculations(share[i].SharePrice, GenerateRandomFloat())
 			if err != nil {
 				logrus.Errorf("Generator: %v", err)
 			}
 
-			share[i] = price.String()
+			share[i].SharePrice = price.String()
 		}
 	}
-
 }
 
+// DecimalCalculations returns new price decimal
 func DecimalCalculations(price string, delta float64) (decimal.Decimal, error) {
 	decPrice, err := decimal.NewFromString(price)
 	if err != nil {
@@ -55,6 +62,7 @@ func DecimalCalculations(price string, delta float64) (decimal.Decimal, error) {
 	return decPrice, nil
 }
 
+// GenerateRandomFloat generates a random float between 0 and 1
 func GenerateRandomFloat() float64 {
 	randomFloat := rand.Float64()
 	return randomFloat
