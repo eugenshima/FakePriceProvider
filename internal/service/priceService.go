@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/eugenshima/FakePriceProvider/internal/model"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
+)
+
+const (
+	MAX = 1
+	MIN = 0
 )
 
 type PriceService struct {
@@ -18,28 +22,40 @@ func NewPriceService(rps PriceRepository) *PriceService {
 }
 
 type PriceRepository interface {
-	PriceStreaming(price *model.Share)
+	PriceStreaming(price []string)
 }
 
-func (priceService *PriceService) GeneratePrice() {
-	price, err := Generator(GenerateRandomFloat())
+func (priceService *PriceService) GeneratePrice(constPrices []string) {
+	for {
+		share := constPrices
+		priceService.rps.PriceStreaming(share)
+		for i := 0; i < 10; i++ {
+			price, err := DecimalCalculations(share[i], GenerateRandomFloat())
+			if err != nil {
+				logrus.Errorf("Generator: %v", err)
+			}
+
+			share[i] = price.String()
+		}
+	}
+
+}
+
+func DecimalCalculations(price string, delta float64) (decimal.Decimal, error) {
+	decPrice, err := decimal.NewFromString(price)
 	if err != nil {
-		logrus.Errorf("Generator: %v", err)
+		return decimal.Zero, fmt.Errorf("NewFromString: %v", err)
 	}
-	share := &model.Share{
-		SharePrice: price,
-		ShareName:  "Apple",
+	deltaPrice := decimal.NewFromFloat(delta)
+	if rand.Intn(2) == 1 && decPrice.GreaterThan(deltaPrice) {
+		decPrice = decPrice.Add(deltaPrice)
+	} else {
+		decPrice = decPrice.Sub(deltaPrice)
 	}
-	priceService.rps.PriceStreaming(share)
-}
-
-func Generator(sharePrice float64) (decimal.Decimal, error) {
-	price := decimal.NewFromFloatWithExponent(sharePrice, -2)
-	return price, nil
+	return decPrice, nil
 }
 
 func GenerateRandomFloat() float64 {
 	randomFloat := rand.Float64()
-	fmt.Println(randomFloat)
 	return randomFloat
 }

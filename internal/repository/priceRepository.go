@@ -2,14 +2,12 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/eugenshima/FakePriceProvider/internal/model"
-
 	"github.com/redis/go-redis/v9"
-	"github.com/shopspring/decimal"
 )
 
 type PriceRepository struct {
@@ -20,20 +18,19 @@ func NewPriceRepository(redisClient *redis.Client) *PriceRepository {
 	return &PriceRepository{redisClient: redisClient}
 }
 
-func (repo *PriceRepository) PriceStreaming(price *model.Share) {
+func (repo *PriceRepository) PriceStreaming(price []string) {
 	identificator := 0
 	id := strconv.FormatInt(time.Now().Unix(), 10)
+	recordJSON, _ := json.Marshal(price)
 	payload := map[string]interface{}{
-		"timestamp": id,
-		"price":     decimal.Decimal.String(price.SharePrice),
-		"name":      price.ShareName,
+		"timestamp":       id,
+		"GeneratedPrices": recordJSON,
 	}
 
-	identificator++
 	id = id + "-" + strconv.Itoa(identificator)
 
 	err := repo.redisClient.XAdd(context.Background(), &redis.XAddArgs{
-		Stream: "testStream",
+		Stream: "PriceStreaming",
 		MaxLen: 0,
 		ID:     id,
 		Values: payload,
@@ -41,7 +38,5 @@ func (repo *PriceRepository) PriceStreaming(price *model.Share) {
 	if err != nil {
 		fmt.Println("Error adding message to Redis Stream:", err)
 	}
-	const TTL = 2
-	time.Sleep(TTL * time.Second)
-
+	time.Sleep(1 * time.Second)
 }
