@@ -1,4 +1,4 @@
-module github.com/eugenshima/FakePriceProvider
+module github.com/eugenshima/fake-price-provider
 
 go 1.18
 

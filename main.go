@@ -4,10 +4,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/eugenshima/FakePriceProvider/internal/config"
-	"github.com/eugenshima/FakePriceProvider/internal/model"
-	"github.com/eugenshima/FakePriceProvider/internal/repository"
-	"github.com/eugenshima/FakePriceProvider/internal/service"
+	"github.com/eugenshima/fake-price-provider/internal/config"
+	"github.com/eugenshima/fake-price-provider/internal/model"
+	"github.com/eugenshima/fake-price-provider/internal/repository"
+	"github.com/eugenshima/fake-price-provider/internal/service"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -38,45 +38,25 @@ func main() {
 	}
 	rps := repository.NewPriceRepository(client)
 	ps := service.NewPriceService(rps)
-	start := []model.Share{
+	start := []*model.Share{
 		{
-			SharePrice: "30",
-			ShareName:  "Apple",
-		},
-		{
-			SharePrice: "50",
-			ShareName:  "Tesla",
-		},
-		{
-			SharePrice: "70",
-			ShareName:  "Amazon",
-		},
-		{
-			SharePrice: "10",
-			ShareName:  "NVidia",
-		},
-		{
-			SharePrice: "20",
-			ShareName:  "AMD",
-		},
-		{
-			SharePrice: "1337",
+			SharePrice: 1337,
 			ShareName:  "Netflix",
 		},
 		{
-			SharePrice: "120",
+			SharePrice: 120,
 			ShareName:  "GameStop",
 		},
 		{
-			SharePrice: "229",
+			SharePrice: 229,
 			ShareName:  "Spotify",
 		},
 		{
-			SharePrice: "1400",
+			SharePrice: 1400,
 			ShareName:  "Microsoft",
 		},
 		{
-			SharePrice: "1000",
+			SharePrice: 1000,
 			ShareName:  "Intel",
 		},
 	}
