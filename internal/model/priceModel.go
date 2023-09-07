@@ -3,6 +3,6 @@ package model
 
 // Share struct represents a model for shares
 type Share struct {
-	SharePrice string `json:"price"`
-	ShareName  string `json:"share_name"`
+	ShareName  string  `json:"share_name"`
+	SharePrice float64 `json:"price"`
 }

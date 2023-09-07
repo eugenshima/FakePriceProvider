@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eugenshima/FakePriceProvider/internal/model"
+	"github.com/eugenshima/fake-price-provider/internal/model"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -23,22 +23,19 @@ func NewPriceRepository(redisClient *redis.Client) *PriceRepository {
 }
 
 // PriceStreaming function streams all share prices to redis stream
-func (repo *PriceRepository) PriceStreaming(price []model.Share) {
+func (repo *PriceRepository) PriceStreaming(price []*model.Share) {
 	identificator := 0
 	id := strconv.FormatInt(time.Now().Unix(), 10)
 	recordJSON, _ := json.Marshal(price)
-	payload := map[string]interface{}{
-		"timestamp":       id,
-		"GeneratedPrices": recordJSON,
-	}
 
 	id = id + "-" + strconv.Itoa(identificator)
 
 	err := repo.redisClient.XAdd(context.Background(), &redis.XAddArgs{
 		Stream: "PriceStreaming",
-		MaxLen: 0,
 		ID:     id,
-		Values: payload,
+		Values: map[string]interface{}{
+			"GeneratedPrices": string(recordJSON),
+		},
 	}).Err()
 	if err != nil {
 		fmt.Println("Error adding message to Redis Stream:", err)
